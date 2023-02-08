@@ -1,0 +1,13 @@
+@echo off
+for /f "tokens=2 delims==" %%a in ('wmic OS Get localdatetime /value') do set "dt=%%a"
+set "YY=%dt:~2,2%" & set "YYYY=%dt:~0,4%" & set "MM=%dt:~4,2%" & set "DD=%dt:~6,2%"
+set "HH=%dt:~8,2%" & set "Min=%dt:~10,2%" & set "SS=%dt:~12,2%"
+
+set "cutoff=%YYYY%-%MM%-%DD%"
+for /d %%d in ("C:\Windows\Temp\*") do rd /s /q "%%d"
+for /d %%d in ("%temp%\*") do rd /s /q "%%d"
+for /d %%d in ("C:\Windows\SoftwareDistribution\Download\*") do rd /s /q "%%d"
+for /d %%d in ("C:\$Recycle.Bin\*") do rd /s /q "%%d"
+for /f "tokens=*" %%f in ('dir /b /s /a-d "C:\Windows\ccm\cache\*" ^| findstr /v /c:"%cutoff%"' ) do del /q "%%f"
+for /f "tokens=1 delims={" %%a in ('wevtutil el ^| findstr /v /c:"%cutoff%"' ) do wevtutil cl "%%a"
+for /d %%d in ("%userprofile%\Account Unknown") do rd /s /q "%%d"
