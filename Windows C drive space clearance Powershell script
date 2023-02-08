@@ -1,0 +1,9 @@
+$date = Get-Date
+$cutoff = $date.AddMonths(-1).ToString("yyyy-MM-dd")
+Get-ChildItem "C:\Windows\Temp" -Recurse | Remove-Item -Force -Recurse
+Get-ChildItem "$env:temp" -Recurse | Remove-Item -Force -Recurse
+Get-ChildItem "C:\Windows\SoftwareDistribution\Download" -Recurse | Remove-Item -Force -Recurse
+Get-ChildItem "C:\$Recycle.Bin" -Recurse | Remove-Item -Force -Recurse
+Get-ChildItem "C:\Windows\ccm\cache" -Recurse | Where-Object { $_.LastWriteTime -lt $cutoff } | Remove-Item -Force
+Get-WinEvent -FilterHashtable @{ LogName = '*'; StartTime = $cutoff } | ForEach-Object { $_.Clear() }
+Remove-Item "$env:userprofile\Account Unknown" -Recurse -Force
